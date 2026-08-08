@@ -1,17 +1,28 @@
-# starter_app
+# コードスタジオ
 
-A new Flutter project.
+QRコードと各種バーコードを作成・読み取りできる Flutter アプリです。Android と Web/PWA に対応しています。
 
-## Getting Started
+## Web 版
 
-This project is a starting point for a Flutter application.
+<https://mars665.github.io/qr-barcode-studio/>
 
-A few resources to get you started if this is your first Flutter project:
+プライバシーポリシー：<https://mars665.github.io/qr-barcode-studio/privacy.html>
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## 主な機能
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- QR、JAN/EAN-13、JAN/EAN-8、Code128、Code39、ITF、ISBN の作成
+- 入力形式とチェックデジットの検証
+- 最大1,000件の連番一括作成と逐次検証
+- カメラによるQRコード・バーコード読み取り
+- 入力例、読み取り結果、コピー操作
+- カメラ映像と入力データを外部へ送信しないローカル処理
+
+## 開発と検証
+
+```powershell
+D:\Dev\flutter\bin\flutter.bat analyze
+D:\Dev\flutter\bin\flutter.bat test
+D:\Dev\flutter\bin\flutter.bat build web --release --base-href "/qr-barcode-studio/"
+```
+
+詳しいローカル環境、Android署名、端末インストール、Git運用については `PROJECT_GUIDE.md` を参照してください。

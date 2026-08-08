@@ -12,6 +12,8 @@
 - Android 包名：`com.example.starter_app`
 - Git 默认分支：`main`
 - GitHub 仓库：<https://github.com/mars665/qr-barcode-studio>
+- Web/PWA：<https://mars665.github.io/qr-barcode-studio/>
+- Web 隐私政策：<https://mars665.github.io/qr-barcode-studio/privacy.html>
 - Git 提交身份：`slw <shanlw1983@gmail.com>`
 
 ## 2. 重要签名信息
@@ -236,7 +238,24 @@ git pull → 修改 → analyze/test → git diff → git add → git commit →
 - 正式发布前必须创建专用 Release keystore，并妥善备份；不要继续使用 debug keystore 发布。
 - 不要删除现有文件或覆盖用户修改。修改前先运行 `git status` 和 `git diff`。
 
-## 10. 备份
+## 10. Web/PWA 与 GitHub Pages
+
+- Web 平台目录：`web/`
+- Pages 工作流：`.github/workflows/deploy-web.yml`
+- 部署来源：GitHub Actions
+- 正式分支：`main`
+- Pages 子路径：`/qr-barcode-studio/`
+- GitHub 默认域名已强制 HTTPS
+
+本地构建：
+
+```powershell
+D:\Dev\flutter\bin\flutter.bat build web --release --base-href "/qr-barcode-studio/"
+```
+
+每次推送 `main` 后，Actions 会依次执行依赖安装、静态分析、测试、Web 构建和 Pages 部署。浏览器扫码必须通过 HTTPS 或 localhost 访问，并由用户授权相机权限。
+
+## 11. 备份
 
 初始功能版本备份：
 
@@ -249,4 +268,3 @@ D:\Codex\New project\starter_app-backup-20260808-014319.zip
 ```text
 6052BD22F844077F100AA551CBD39D4F99721341650B523CF26B7EF8BE377572
 ```
-
