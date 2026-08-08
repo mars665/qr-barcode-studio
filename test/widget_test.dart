@@ -13,6 +13,19 @@ void main() {
     expect(find.text('読み取り'), findsOneWidget);
   });
 
+  testWidgets('privacy policy is available from the home screen', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.text('プライバシーポリシー'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('1. 取得する情報'), findsOneWidget);
+    expect(find.text('2. カメラの利用'), findsOneWidget);
+    expect(find.text('shanlw1983@gmail.com'), findsOneWidget);
+  });
+
   testWidgets('batch mode generates an inclusive number range', (tester) async {
     await tester.pumpWidget(const MyApp());
     await tester.tap(find.text('コード作成'));

@@ -1,4 +1,5 @@
 import 'package:barcode_widget/barcode_widget.dart' as generator;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' as scanner;
@@ -34,42 +35,145 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('コードスタジオ')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 12),
-            Text('メニュー', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 8),
-            Text(
-              '使用する機能を選択してください。',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 28),
-            MenuCard(
-              icon: Icons.qr_code_2,
-              title: 'コード作成',
-              description: 'QRコード・バーコードを1件または一括で作成します。',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ToolScreen(initialIndex: 0),
-                ),
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 12),
+                  Text(
+                    'メニュー',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '使用する機能を選択してください。',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 28),
+                  MenuCard(
+                    icon: Icons.qr_code_2,
+                    title: 'コード作成',
+                    description: 'QRコード・バーコードを1件または一括で作成します。',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ToolScreen(initialIndex: 0),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  MenuCard(
+                    icon: Icons.qr_code_scanner,
+                    title: '読み取り',
+                    description: 'カメラでコードを読み取り、内容を表示します。',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ToolScreen(initialIndex: 1),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  TextButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const PrivacyPolicyScreen(),
+                      ),
+                    ),
+                    icon: const Icon(Icons.privacy_tip_outlined),
+                    label: const Text('プライバシーポリシー'),
+                  ),
+                  if (kIsWeb)
+                    Text(
+                      'カメラ映像と読み取りデータは端末内で処理され、サーバーには送信されません。',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            MenuCard(
-              icon: Icons.qr_code_scanner,
-              title: '読み取り',
-              description: 'カメラでコードを読み取り、内容を表示します。',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ToolScreen(initialIndex: 1),
-                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PrivacyPolicyScreen extends StatelessWidget {
+  const PrivacyPolicyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('プライバシーポリシー')),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'プライバシーポリシー',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text('最終更新日：2026年8月8日'),
+                  SizedBox(height: 24),
+                  Text(
+                    '1. 取得する情報',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    '本アプリは、氏名、メールアドレス、位置情報などの個人情報を収集しません。'
+                    'アカウント登録も必要ありません。',
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    '2. カメラの利用',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'カメラはQRコードおよびバーコードを読み取る目的でのみ使用します。'
+                    'カメラ映像は端末内で処理され、保存または外部サーバーへ送信されません。',
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    '3. 入力・読み取りデータ',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'コード作成時の入力内容と読み取り結果は端末内で処理されます。'
+                    '本アプリはこれらのデータを外部へ送信しません。'
+                    '読み取り履歴はアプリ終了後に保持されません。',
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    '4. 第三者提供・広告',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text('個人情報の第三者提供、広告配信、行動分析は行いません。'),
+                  SizedBox(height: 20),
+                  Text(
+                    '5. お問い合わせ',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  SelectableText('shanlw1983@gmail.com'),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -788,6 +892,14 @@ class _ScanScreenState extends State<ScanScreen> {
               scanner.MobileScanner(
                 controller: _scannerController,
                 onDetect: _handleDetection,
+                placeholderBuilder: (context) => const ColoredBox(
+                  color: Colors.black,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                errorBuilder: (context, error) => _ScannerErrorView(
+                  error: error,
+                  onRetry: _scannerController.start,
+                ),
               ),
               IgnorePointer(
                 child: Center(
@@ -806,10 +918,23 @@ class _ScanScreenState extends State<ScanScreen> {
                 bottom: 12,
                 child: Row(
                   children: [
-                    IconButton.filledTonal(
-                      tooltip: 'ライト',
-                      onPressed: _scannerController.toggleTorch,
-                      icon: const Icon(Icons.flashlight_on_outlined),
+                    ValueListenableBuilder<scanner.MobileScannerState>(
+                      valueListenable: _scannerController,
+                      builder: (context, state, _) {
+                        if (state.torchState ==
+                            scanner.TorchState.unavailable) {
+                          return const SizedBox.shrink();
+                        }
+                        return IconButton.filledTonal(
+                          tooltip: 'ライト',
+                          onPressed: _scannerController.toggleTorch,
+                          icon: Icon(
+                            state.torchState == scanner.TorchState.on
+                                ? Icons.flashlight_on
+                                : Icons.flashlight_on_outlined,
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(width: 8),
                     IconButton.filledTonal(
@@ -865,6 +990,55 @@ class _ScanScreenState extends State<ScanScreen> {
                 ),
         ),
       ],
+    );
+  }
+}
+
+class _ScannerErrorView extends StatelessWidget {
+  const _ScannerErrorView({required this.error, required this.onRetry});
+
+  final scanner.MobileScannerException error;
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final message = switch (error.errorCode) {
+      scanner.MobileScannerErrorCode.permissionDenied =>
+        'カメラの使用が許可されていません。\nブラウザーまたは端末の設定でカメラを許可してください。',
+      scanner.MobileScannerErrorCode.unsupported =>
+        'この端末またはブラウザーではカメラ読み取りを利用できません。',
+      _ => 'カメラを開始できませんでした。',
+    };
+
+    return ColoredBox(
+      color: Colors.black87,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.no_photography_outlined,
+                color: Colors.white,
+                size: 44,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh),
+                label: const Text('再試行'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
