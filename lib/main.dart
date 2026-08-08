@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' as scanner;
 
+import 'custom_templates.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -73,6 +75,17 @@ class HomeScreen extends StatelessWidget {
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => const ToolScreen(initialIndex: 1),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  MenuCard(
+                    icon: Icons.dashboard_customize_outlined,
+                    title: 'カスタムテンプレート',
+                    description: '定型文の変更部分だけを入力してQRコードを作成します。',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CustomTemplateScreen(),
                       ),
                     ),
                   ),
@@ -157,14 +170,24 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Text(
-                    '4. 第三者提供・広告',
+                    '4. カスタムテンプレート',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    '作成したカスタムテンプレートはブラウザーのlocalStorageまたは端末内にのみ保存され、'
+                    '外部サーバーへ送信されません。ブラウザーのデータを消去すると削除されます。',
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    '5. 第三者提供・広告',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
                   Text('個人情報の第三者提供、広告配信、行動分析は行いません。'),
                   SizedBox(height: 20),
                   Text(
-                    '5. お問い合わせ',
+                    '6. お問い合わせ',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),

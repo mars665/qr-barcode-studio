@@ -268,3 +268,13 @@ D:\Codex\New project\starter_app-backup-20260808-014319.zip
 ```text
 6052BD22F844077F100AA551CBD39D4F99721341650B523CF26B7EF8BE377572
 ```
+
+## 12. Custom templates / カスタムテンプレート
+
+- Web 版では名前付きQRテンプレートを作成・編集・コピー・削除できる。
+- 原始形式の固定部分を保持し、1つ以上の可変フィールドだけを入力してQRを生成する。
+- 保存先はブラウザーの `localStorage` のみ。サーバーには送信しない。
+- 保存キー：`qr_barcode_studio.custom_templates.v2`
+- 旧キー `qr_barcode_studio.custom_templates` と `customTemplates` を読み込み可能。
+- ブラウザーのサイトデータを消去するとテンプレートも削除される。
+- 主な実装：`lib/custom_templates.dart`、`lib/template_model.dart`、`lib/template_store_web.dart`
