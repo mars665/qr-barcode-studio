@@ -44,14 +44,20 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('製番テスト'), findsOneWidget);
 
-    final fields = find.byType(TextField);
-    expect(fields, findsNWidgets(2));
-    await tester.enterText(fields.first, 'A1234567');
-    await tester.enterText(fields.last, 'B765432');
+    final dynamicFields = find.byType(TextField);
+    await tester.enterText(dynamicFields.at(0), 'A1234567');
+    await tester.enterText(dynamicFields.at(1), 'B765432');
     await tester.pump();
+    final dataField = tester.widget<TextField>(
+      find.byKey(const Key('template_data')),
+    );
     expect(
-      find.text('製番 M6123456789012A1234567B765432511111111'),
-      findsOneWidget,
+      dataField.controller!.text,
+      '製番 M6123456789012A1234567B765432511111111',
+    );
+    await tester.enterText(
+      find.byKey(const Key('template_data')),
+      '製番 M6123456789012A1234567B765432511111111-手修正',
     );
     await tester.ensureVisible(find.byKey(const Key('generate_template_qr')));
     await tester.drag(find.byType(ListView), const Offset(0, -120));
@@ -59,6 +65,10 @@ void main() {
     await tester.tap(find.byKey(const Key('generate_template_qr')));
     await tester.pumpAndSettle();
     expect(find.text('完成データをコピー'), findsOneWidget);
+    expect(
+      find.text('製番 M6123456789012A1234567B765432511111111-手修正'),
+      findsWidgets,
+    );
 
     // Recreate the app to verify that the store reloads the saved template.
     await tester.pumpWidget(const MyApp());

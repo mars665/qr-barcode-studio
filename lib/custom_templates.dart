@@ -14,6 +14,7 @@ class CustomTemplateScreen extends StatefulWidget {
 
 class _CustomTemplateScreenState extends State<CustomTemplateScreen> {
   final BrowserTemplateStore _store = BrowserTemplateStore();
+  final TextEditingController _dataController = TextEditingController();
   final Map<String, TextEditingController> _controllers = {};
   List<CustomCodeTemplate> _templates = [];
   CustomCodeTemplate? _selected;
@@ -39,6 +40,7 @@ class _CustomTemplateScreenState extends State<CustomTemplateScreen> {
 
   @override
   void dispose() {
+    _dataController.dispose();
     for (final controller in _controllers.values) {
       controller.dispose();
     }
@@ -57,6 +59,13 @@ class _CustomTemplateScreenState extends State<CustomTemplateScreen> {
         );
       }
     }
+    _dataController.text = template == null
+        ? ''
+        : buildTemplateValue(template, {
+                for (final field in template.fields)
+                  field.id: field.defaultValue,
+              }).value ??
+              template.source;
     setState(() {
       _selected = template;
       _generatedValue = null;
@@ -85,15 +94,11 @@ class _CustomTemplateScreenState extends State<CustomTemplateScreen> {
     if (mounted) _select(template);
   }
 
-  Future<void> _openEditor({
-    CustomCodeTemplate? template,
-    bool copy = false,
-  }) async {
+  Future<void> _openEditor({CustomCodeTemplate? template}) async {
     final result = await Navigator.of(context).push<CustomCodeTemplate>(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) =>
-            TemplateEditorScreen(template: template, saveAsCopy: copy),
+        builder: (_) => TemplateEditorScreen(template: template),
       ),
     );
     if (result != null) await _saveTemplate(result);
@@ -128,14 +133,20 @@ class _CustomTemplateScreenState extends State<CustomTemplateScreen> {
   }
 
   void _generate() {
-    final preview = _preview;
-    if (!preview.isValid) {
+    final data = _dataController.text.trim();
+    if (data.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(preview.error!)));
+      ).showSnackBar(const SnackBar(content: Text('生成データを入力してください。')));
       return;
     }
-    setState(() => _generatedValue = preview.value);
+    setState(() => _generatedValue = data);
+  }
+
+  void _refreshDataFromFields() {
+    final preview = _preview;
+    _dataController.text = preview.value ?? '';
+    setState(() => _generatedValue = null);
   }
 
   @override
@@ -209,14 +220,6 @@ class _CustomTemplateScreenState extends State<CustomTemplateScreen> {
                                 label: const Text('編集'),
                               ),
                               OutlinedButton.icon(
-                                onPressed: () => _openEditor(
-                                  template: _selected,
-                                  copy: true,
-                                ),
-                                icon: const Icon(Icons.copy_all_outlined),
-                                label: const Text('コピーして保存'),
-                              ),
-                              OutlinedButton.icon(
                                 onPressed: _delete,
                                 icon: const Icon(Icons.delete_outline),
                                 label: const Text('削除'),
@@ -243,40 +246,22 @@ class _CustomTemplateScreenState extends State<CustomTemplateScreen> {
                                     ? '同じ対象文字をすべて変更します'
                                     : '最初に一致する対象文字を変更します',
                               ),
-                              onChanged: (_) => setState(() {
-                                _generatedValue = null;
-                              }),
+                              onChanged: (_) => _refreshDataFromFields(),
                             ),
                             const SizedBox(height: 8),
                           ],
-                          Card(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerLow,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '自動拼接プレビュー',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  SelectableText(
-                                    _preview.value ?? _preview.error!,
-                                    key: const Key('template_preview'),
-                                    style: TextStyle(
-                                      color: _preview.isValid
-                                          ? null
-                                          : Theme.of(context).colorScheme.error,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          TextField(
+                            key: const Key('template_data'),
+                            controller: _dataController,
+                            minLines: 2,
+                            maxLines: 5,
+                            decoration: const InputDecoration(
+                              labelText: '生成データ',
+                              helperText: '自動で組み立てた内容です。この欄で直接修正できます。',
+                              alignLabelWithHint: true,
                             ),
+                            onChanged: (_) =>
+                                setState(() => _generatedValue = null),
                           ),
                           const SizedBox(height: 12),
                           FilledButton.icon(
@@ -328,14 +313,9 @@ class _CustomTemplateScreenState extends State<CustomTemplateScreen> {
 }
 
 class TemplateEditorScreen extends StatefulWidget {
-  const TemplateEditorScreen({
-    super.key,
-    this.template,
-    this.saveAsCopy = false,
-  });
+  const TemplateEditorScreen({super.key, this.template});
 
   final CustomCodeTemplate? template;
-  final bool saveAsCopy;
 
   @override
   State<TemplateEditorScreen> createState() => _TemplateEditorScreenState();
@@ -349,11 +329,7 @@ class _TemplateEditorScreenState extends State<TemplateEditorScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(
-      text: widget.saveAsCopy && widget.template != null
-          ? '${widget.template!.name} のコピー'
-          : widget.template?.name ?? '',
-    );
+    _nameController = TextEditingController(text: widget.template?.name ?? '');
     _sourceController = TextEditingController(
       text: widget.template?.source ?? '',
     );
@@ -493,7 +469,7 @@ class _TemplateEditorScreenState extends State<TemplateEditorScreen> {
       return;
     }
     final candidate = CustomCodeTemplate(
-      id: widget.saveAsCopy || widget.template == null
+      id: widget.template == null
           ? 'template_${DateTime.now().microsecondsSinceEpoch}'
           : widget.template!.id,
       name: name,
